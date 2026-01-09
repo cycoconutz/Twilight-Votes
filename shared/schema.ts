@@ -54,4 +54,6 @@ export interface Session {
   name: string;
   createdAt: number;
   players: Player[];
+  agenda1Name?: string;
+  agenda2Name?: string;
 }
