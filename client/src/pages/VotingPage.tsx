@@ -21,6 +21,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
 interface Agenda {
@@ -34,17 +35,18 @@ export default function VotingPage() {
   const { sessions, updateSession } = useSessions();
   const [open1, setOpen1] = useState(false);
   const [open2, setOpen2] = useState(false);
-  
+
+  const session = useMemo(() => sessions.find(s => s.id === id), [sessions, id]);
+
   const { data: agendas = [], isLoading: isLoadingAgendas } = useQuery<Agenda[]>({
     queryKey: ["/api/agendas"],
     queryFn: async () => {
       const res = await fetch("https://axiomvortix.com/api/cards/agendas");
       if (!res.ok) throw new Error("Failed to fetch agendas");
       return res.json();
-    }
+    },
+    enabled: !!session,
   });
-
-  const session = useMemo(() => sessions.find(s => s.id === id), [sessions, id]);
   
   if (!session) {
     return (
@@ -222,6 +224,42 @@ export default function VotingPage() {
             </Button>
           </div>
         </header>
+
+        {/* Agenda Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <AnimatePresence>
+            {session.agenda1Name && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+              >
+                <Card className="bg-primary/5 border-primary/20 p-4 relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <Search className="w-12 h-12" />
+                  </div>
+                  <label className="text-[10px] uppercase tracking-widest text-primary font-bold mb-1 block">Active Agenda I</label>
+                  <h3 className="text-xl font-bold text-white tracking-tight leading-tight">{session.agenda1Name}</h3>
+                </Card>
+              </motion.div>
+            )}
+            {session.agenda2Name && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+              >
+                <Card className="bg-primary/5 border-primary/20 p-4 relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <Search className="w-12 h-12" />
+                  </div>
+                  <label className="text-[10px] uppercase tracking-widest text-primary font-bold mb-1 block">Active Agenda II</label>
+                  <h3 className="text-xl font-bold text-white tracking-tight leading-tight">{session.agenda2Name}</h3>
+                </Card>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
 
         {/* Main Content Area */}
         {players.length > 0 ? (
