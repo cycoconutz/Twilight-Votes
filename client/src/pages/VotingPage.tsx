@@ -44,7 +44,7 @@ export default function VotingPage() {
     }
   });
 
-  const session = sessions.find(s => s.id === id);
+  const session = useMemo(() => sessions.find(s => s.id === id), [sessions, id]);
   
   if (!session) {
     return (
@@ -67,6 +67,8 @@ export default function VotingPage() {
       totalVotes: 0,
       agenda1Votes: 0,
       agenda2Votes: 0,
+      agenda1Rider: 0,
+      agenda2Rider: 0,
     };
     
     updateSession(session.id, { players: [...players, newPlayer] });
