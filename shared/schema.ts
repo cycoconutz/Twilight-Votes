@@ -39,7 +39,8 @@ export const players = pgTable("players", {
   name: text("name").notNull().default("Player"),
   faction: text("faction").notNull(),
   totalVotes: integer("total_votes").notNull().default(0),
-  currentVotes: integer("current_votes").notNull().default(0),
+  agenda1Votes: integer("agenda1_votes").notNull().default(0),
+  agenda2Votes: integer("agenda2_votes").notNull().default(0),
 });
 
 export const insertPlayerSchema = createInsertSchema(players).omit({ id: true });

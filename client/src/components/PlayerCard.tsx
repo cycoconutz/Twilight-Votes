@@ -37,13 +37,13 @@ export function PlayerCard({ player }: PlayerCardProps) {
     }
   };
 
-  const handleVote = (delta: number) => {
-    const newCurrent = Math.max(0, player.currentVotes + delta);
+  const handleVote = (field: "agenda1Votes" | "agenda2Votes", delta: number) => {
+    const newCurrent = Math.max(0, (player[field] as number) + delta);
     const newTotal = Math.max(0, player.totalVotes - delta);
     
     updatePlayer.mutate({
       id: player.id,
-      currentVotes: newCurrent,
+      [field]: newCurrent,
       totalVotes: newTotal,
     });
   };
@@ -95,10 +95,10 @@ export function PlayerCard({ player }: PlayerCardProps) {
               />
             </div>
 
-            {/* Current Votes Control */}
+            {/* Agenda 1 Control */}
             <div className="bg-primary/5 p-3 rounded-lg border border-primary/20">
               <label className="text-xs uppercase tracking-widest text-primary/80 font-bold mb-2 block text-center">
-                Current
+                Agenda 1
               </label>
               
               <div className="flex items-center justify-between gap-1">
@@ -106,21 +106,53 @@ export function PlayerCard({ player }: PlayerCardProps) {
                   variant="outline"
                   size="icon"
                   className="h-8 w-8 rounded-full border-primary/30 text-primary hover:bg-primary/20 hover:text-primary hover:border-primary"
-                  onClick={() => handleVote(-1)}
-                  disabled={player.currentVotes <= 0}
+                  onClick={() => handleVote("agenda1Votes", -1)}
+                  disabled={player.agenda1Votes <= 0}
                 >
                   <Minus className="w-4 h-4" />
                 </Button>
                 
                 <span className="text-2xl font-bold font-mono text-white tabular-nums">
-                  {player.currentVotes}
+                  {player.agenda1Votes}
                 </span>
 
                 <Button
                   variant="outline"
                   size="icon"
                   className="h-8 w-8 rounded-full border-primary/30 text-primary hover:bg-primary/20 hover:text-primary hover:border-primary"
-                  onClick={() => handleVote(1)}
+                  onClick={() => handleVote("agenda1Votes", 1)}
+                >
+                  <Plus className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Agenda 2 Control */}
+            <div className="bg-primary/5 p-3 rounded-lg border border-primary/20">
+              <label className="text-xs uppercase tracking-widest text-primary/80 font-bold mb-2 block text-center">
+                Agenda 2
+              </label>
+              
+              <div className="flex items-center justify-between gap-1">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8 rounded-full border-primary/30 text-primary hover:bg-primary/20 hover:text-primary hover:border-primary"
+                  onClick={() => handleVote("agenda2Votes", -1)}
+                  disabled={player.agenda2Votes <= 0}
+                >
+                  <Minus className="w-4 h-4" />
+                </Button>
+                
+                <span className="text-2xl font-bold font-mono text-white tabular-nums">
+                  {player.agenda2Votes}
+                </span>
+
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="h-8 w-8 rounded-full border-primary/30 text-primary hover:bg-primary/20 hover:text-primary hover:border-primary"
+                  onClick={() => handleVote("agenda2Votes", 1)}
                 >
                   <Plus className="w-4 h-4" />
                 </Button>
