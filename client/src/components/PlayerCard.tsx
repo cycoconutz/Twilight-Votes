@@ -6,25 +6,19 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { FactionSelect } from "@/components/FactionSelect";
 import type { Player } from "@shared/schema";
-import { useUpdatePlayer, useDeletePlayer } from "@/hooks/use-players";
 
 interface PlayerCardProps {
   player: Player;
+  onUpdate: (updates: Partial<Player>) => void;
+  onDelete: () => void;
 }
 
-export function PlayerCard({ player }: PlayerCardProps) {
-  const updatePlayer = useUpdatePlayer();
-  const deletePlayer = useDeletePlayer();
+export function PlayerCard({ player, onUpdate, onDelete }: PlayerCardProps) {
   const [localTotal, setLocalTotal] = useState(player.totalVotes);
   
-  // Keep local state in sync when server updates
   useEffect(() => {
     setLocalTotal(player.totalVotes);
   }, [player.totalVotes]);
-
-  const handleFactionChange = (faction: string) => {
-    updatePlayer.mutate({ id: player.id, faction });
-  };
 
   const handleTotalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVal = parseInt(e.target.value) || 0;
@@ -33,7 +27,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
 
   const handleTotalBlur = () => {
     if (localTotal !== player.totalVotes) {
-      updatePlayer.mutate({ id: player.id, totalVotes: localTotal });
+      onUpdate({ totalVotes: localTotal });
     }
   };
 
@@ -41,8 +35,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
     const newCurrent = Math.max(0, (player[field] as number) + delta);
     const newTotal = Math.max(0, player.totalVotes - delta);
     
-    updatePlayer.mutate({
-      id: player.id,
+    onUpdate({
       [field]: newCurrent,
       totalVotes: newTotal,
     });
@@ -56,7 +49,6 @@ export function PlayerCard({ player }: PlayerCardProps) {
       layout
     >
       <Card className="glass-panel overflow-hidden relative group">
-        {/* Glow effect on hover */}
         <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-accent opacity-0 group-hover:opacity-20 blur transition duration-500 rounded-lg" />
         
         <CardContent className="relative p-6 space-y-6">
@@ -67,21 +59,20 @@ export function PlayerCard({ player }: PlayerCardProps) {
               </label>
               <FactionSelect 
                 value={player.faction} 
-                onSelect={handleFactionChange}
+                onSelect={(faction) => onUpdate({ faction })}
               />
             </div>
             <Button
               variant="ghost"
               size="icon"
               className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 -mr-2 -mt-2"
-              onClick={() => deletePlayer.mutate(player.id)}
+              onClick={onDelete}
             >
               <Trash2 className="w-4 h-4" />
             </Button>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            {/* Total Votes Input */}
             <div className="bg-black/20 p-3 rounded-lg border border-white/5">
               <label className="text-xs uppercase tracking-widest text-muted-foreground font-bold mb-2 flex items-center gap-2">
                 <Trophy className="w-3 h-3" /> Total
@@ -95,73 +86,30 @@ export function PlayerCard({ player }: PlayerCardProps) {
               />
             </div>
 
-            {/* Agenda 1 Control */}
-            <div className="bg-primary/5 p-3 rounded-lg border border-primary/20">
-              <label className="text-xs uppercase tracking-widest text-primary/80 font-bold mb-2 block text-center">
-                Agenda 1
-              </label>
-              
-              <div className="flex items-center justify-between gap-1">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-8 w-8 rounded-full border-primary/30 text-primary hover:bg-primary/20 hover:text-primary hover:border-primary"
-                  onClick={() => handleVote("agenda1Votes", -1)}
-                  disabled={player.agenda1Votes <= 0}
-                >
-                  <Minus className="w-4 h-4" />
-                </Button>
-                
-                <span className="text-2xl font-bold font-mono text-white tabular-nums">
-                  {player.agenda1Votes}
-                </span>
-
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-8 w-8 rounded-full border-primary/30 text-primary hover:bg-primary/20 hover:text-primary hover:border-primary"
-                  onClick={() => handleVote("agenda1Votes", 1)}
-                >
-                  <Plus className="w-4 h-4" />
-                </Button>
+            <div className="grid gap-2">
+              <div className="bg-primary/5 p-2 rounded-lg border border-primary/20">
+                <label className="text-[10px] uppercase tracking-tighter text-primary/80 font-bold mb-1 block text-center">
+                  Agenda 1
+                </label>
+                <div className="flex items-center justify-between">
+                  <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => handleVote("agenda1Votes", -1)} disabled={player.agenda1Votes <= 0}><Minus className="w-3 h-3" /></Button>
+                  <span className="text-lg font-bold font-mono">{player.agenda1Votes}</span>
+                  <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => handleVote("agenda1Votes", 1)}><Plus className="w-3 h-3" /></Button>
+                </div>
               </div>
-            </div>
-
-            {/* Agenda 2 Control */}
-            <div className="bg-primary/5 p-3 rounded-lg border border-primary/20">
-              <label className="text-xs uppercase tracking-widest text-primary/80 font-bold mb-2 block text-center">
-                Agenda 2
-              </label>
-              
-              <div className="flex items-center justify-between gap-1">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-8 w-8 rounded-full border-primary/30 text-primary hover:bg-primary/20 hover:text-primary hover:border-primary"
-                  onClick={() => handleVote("agenda2Votes", -1)}
-                  disabled={player.agenda2Votes <= 0}
-                >
-                  <Minus className="w-4 h-4" />
-                </Button>
-                
-                <span className="text-2xl font-bold font-mono text-white tabular-nums">
-                  {player.agenda2Votes}
-                </span>
-
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="h-8 w-8 rounded-full border-primary/30 text-primary hover:bg-primary/20 hover:text-primary hover:border-primary"
-                  onClick={() => handleVote("agenda2Votes", 1)}
-                >
-                  <Plus className="w-4 h-4" />
-                </Button>
+              <div className="bg-primary/5 p-2 rounded-lg border border-primary/20">
+                <label className="text-[10px] uppercase tracking-tighter text-primary/80 font-bold mb-1 block text-center">
+                  Agenda 2
+                </label>
+                <div className="flex items-center justify-between">
+                  <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => handleVote("agenda2Votes", -1)} disabled={player.agenda2Votes <= 0}><Minus className="w-3 h-3" /></Button>
+                  <span className="text-lg font-bold font-mono">{player.agenda2Votes}</span>
+                  <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => handleVote("agenda2Votes", 1)}><Plus className="w-3 h-3" /></Button>
+                </div>
               </div>
             </div>
           </div>
         </CardContent>
-        
-        {/* Decorative stripe */}
         <div className="h-1 w-full bg-gradient-to-r from-transparent via-primary/50 to-transparent absolute bottom-0 opacity-50" />
       </Card>
     </motion.div>
