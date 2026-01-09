@@ -1,38 +1,45 @@
-import { type User, type InsertUser } from "@shared/schema";
-import { randomUUID } from "crypto";
-
-// modify the interface with any CRUD methods
-// you might need
+import { db } from "./db";
+import {
+  players,
+  type InsertPlayer,
+  type Player
+} from "@shared/schema";
+import { eq, asc } from "drizzle-orm";
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  getPlayers(): Promise<Player[]>;
+  getPlayer(id: number): Promise<Player | undefined>;
+  createPlayer(player: InsertPlayer): Promise<Player>;
+  updatePlayer(id: number, updates: Partial<InsertPlayer>): Promise<Player>;
+  deletePlayer(id: number): Promise<void>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-
-  constructor() {
-    this.users = new Map();
+export class DatabaseStorage implements IStorage {
+  async getPlayers(): Promise<Player[]> {
+    return await db.select().from(players).orderBy(asc(players.id));
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+  async getPlayer(id: number): Promise<Player | undefined> {
+    const [player] = await db.select().from(players).where(eq(players.id, id));
+    return player;
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+  async createPlayer(insertPlayer: InsertPlayer): Promise<Player> {
+    const [player] = await db.insert(players).values(insertPlayer).returning();
+    return player;
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+  async updatePlayer(id: number, updates: Partial<InsertPlayer>): Promise<Player> {
+    const [updated] = await db.update(players)
+      .set(updates)
+      .where(eq(players.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deletePlayer(id: number): Promise<void> {
+    await db.delete(players).where(eq(players.id, id));
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
