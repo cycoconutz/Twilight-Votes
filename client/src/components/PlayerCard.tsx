@@ -39,7 +39,7 @@ export function PlayerCard({ player }: PlayerCardProps) {
 
   const handleVote = (delta: number) => {
     const newCurrent = Math.max(0, player.currentVotes + delta);
-    const newTotal = Math.max(0, player.totalVotes + delta);
+    const newTotal = Math.max(0, player.totalVotes - delta);
     
     updatePlayer.mutate({
       id: player.id,
