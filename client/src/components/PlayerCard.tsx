@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Trash2, Plus, Minus, Trophy } from "lucide-react";
+import { Trash2, Plus, Minus, Trophy, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -41,6 +41,14 @@ export function PlayerCard({ player, onUpdate, onDelete }: PlayerCardProps) {
     });
   };
 
+  const handleReset = () => {
+    onUpdate({
+      totalVotes: 0,
+      agenda1Votes: 0,
+      agenda2Votes: 0,
+    });
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -67,23 +75,37 @@ export function PlayerCard({ player, onUpdate, onDelete }: PlayerCardProps) {
               size="icon"
               className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 -mr-2 -mt-2"
               onClick={onDelete}
+              data-testid="button-delete-player"
             >
               <Trash2 className="w-4 h-4" />
             </Button>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="bg-black/20 p-3 rounded-lg border border-white/5">
-              <label className="text-xs uppercase tracking-widest text-muted-foreground font-bold mb-2 flex items-center gap-2">
-                <Trophy className="w-3 h-3" /> Total
-              </label>
-              <Input
-                type="number"
-                value={localTotal}
-                onChange={handleTotalChange}
-                onBlur={handleTotalBlur}
-                className="bg-background/50 border-white/10 text-xl font-mono text-center h-12 focus-visible:ring-primary/50"
-              />
+            <div className="flex flex-col gap-2">
+              <div className="bg-black/20 p-3 rounded-lg border border-white/5">
+                <label className="text-xs uppercase tracking-widest text-muted-foreground font-bold mb-2 flex items-center gap-2">
+                  <Trophy className="w-3 h-3" /> Total
+                </label>
+                <Input
+                  type="number"
+                  value={localTotal}
+                  onChange={handleTotalChange}
+                  onBlur={handleTotalBlur}
+                  className="bg-background/50 border-white/10 text-xl font-mono text-center h-12 focus-visible:ring-primary/50"
+                  data-testid="input-total-votes"
+                />
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleReset}
+                className="w-full h-8 text-xs gap-2 border-white/10 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/20 transition-colors"
+                data-testid="button-reset-player"
+              >
+                <RotateCcw className="w-3 h-3" />
+                Reset Fields
+              </Button>
             </div>
 
             <div className="grid gap-2">
@@ -92,9 +114,9 @@ export function PlayerCard({ player, onUpdate, onDelete }: PlayerCardProps) {
                   Agenda 1
                 </label>
                 <div className="flex items-center justify-between">
-                  <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => handleVote("agenda1Votes", -1)} disabled={player.agenda1Votes <= 0}><Minus className="w-3 h-3" /></Button>
-                  <span className="text-lg font-bold font-mono">{player.agenda1Votes}</span>
-                  <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => handleVote("agenda1Votes", 1)}><Plus className="w-3 h-3" /></Button>
+                  <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => handleVote("agenda1Votes", -1)} disabled={player.agenda1Votes <= 0} data-testid="button-minus-agenda1"><Minus className="w-3 h-3" /></Button>
+                  <span className="text-lg font-bold font-mono" data-testid="text-agenda1-votes">{player.agenda1Votes}</span>
+                  <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => handleVote("agenda1Votes", 1)} data-testid="button-plus-agenda1"><Plus className="w-3 h-3" /></Button>
                 </div>
               </div>
               <div className="bg-primary/5 p-2 rounded-lg border border-primary/20">
@@ -102,9 +124,9 @@ export function PlayerCard({ player, onUpdate, onDelete }: PlayerCardProps) {
                   Agenda 2
                 </label>
                 <div className="flex items-center justify-between">
-                  <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => handleVote("agenda2Votes", -1)} disabled={player.agenda2Votes <= 0}><Minus className="w-3 h-3" /></Button>
-                  <span className="text-lg font-bold font-mono">{player.agenda2Votes}</span>
-                  <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => handleVote("agenda2Votes", 1)}><Plus className="w-3 h-3" /></Button>
+                  <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => handleVote("agenda2Votes", -1)} disabled={player.agenda2Votes <= 0} data-testid="button-minus-agenda2"><Minus className="w-3 h-3" /></Button>
+                  <span className="text-lg font-bold font-mono" data-testid="text-agenda2-votes">{player.agenda2Votes}</span>
+                  <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => handleVote("agenda2Votes", 1)} data-testid="button-plus-agenda2"><Plus className="w-3 h-3" /></Button>
                 </div>
               </div>
             </div>
