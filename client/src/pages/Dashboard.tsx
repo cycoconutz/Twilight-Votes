@@ -47,7 +47,7 @@ export default function Dashboard() {
             TWILIGHT VOTING
           </h1>
           <p className="text-muted-foreground font-mono tracking-widest uppercase">
-            Multiverse Session Manager
+            AN AGENDA PHASE TOOL FOR TWILIGHT IMPERIUM
           </p>
         </header>
 
