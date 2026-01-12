@@ -4,10 +4,6 @@
 
 A voting tracker application for the board game Twilight Imperium. Players can create voting sessions, add players with their chosen factions, and track vote allocations across multiple agendas. The app uses a sci-fi themed UI with smooth animations and stores session data in browser localStorage for persistence.
 
-## User Preferences
-
-Preferred communication style: Simple, everyday language.
-
 ## System Architecture
 
 ### Frontend Architecture
