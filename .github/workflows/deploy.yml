@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Deploy Twilight Votes to GitHub Pages
 
 on:
   push:
@@ -13,17 +13,29 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
           node-version: 18
 
-      - run: npm install
-      - run: npm run build
+      - name: Install dependencies
+        run: npm install
 
-      - uses: actions/configure-pages@v4
-      - uses: actions/upload-pages-artifact@v3
+      - name: Build site
+        run: npm run build
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload site
+        uses: actions/upload-pages-artifact@v3
         with:
-          path: dist   # or build — whichever your project outputs
-      - uses: actions/deploy-pages@v4
+          path: dist/public
+
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
