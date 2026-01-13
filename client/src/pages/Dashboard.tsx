@@ -61,7 +61,7 @@ export default function Dashboard() {
             <CardContent>
               <form onSubmit={handleCreate} className="flex flex-col gap-4">
                 <Input
-                  placeholder="Enter Session Name (e.g. Friday Night War)"
+                  placeholder="Enter Session Name (e.g. Round 1, Executive Order #999 etc.)"
                   value={newSessionName}
                   onChange={(e) => setNewSessionName(e.target.value)}
                   className="bg-black/20 border-white/10 focus-visible:ring-primary"
